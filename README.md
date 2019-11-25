@@ -1,7 +1,9 @@
 > WARNING: this project is in BETA
 
 An flexible IFTTT-engine with generated gui. 
-This is basically a wrapper for [json-rules-engine](https://npmjs.com/package/json-rules-engine).
+This is basically a wrapper for [jsreactor](https://npmjs.com/package/jsreactor).
+
+![](https://raw.githubusercontent.com/coderofsalvation/parse-server-jsreactor/master/doc/bre.gif)
 
 ## Installation
 
@@ -26,7 +28,7 @@ bre.init()
 
 Then specify which (database) classes you want to expose to it:
 
-![](https://raw.githubusercontent.com/coderofsalvation/parse-server-business-rule-engine/master/doc/config.png)
+![](https://raw.githubusercontent.com/coderofsalvation/parse-server-jsreactor/master/doc/config.png)
 
 ## Running the BRE
 

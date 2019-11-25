@@ -15,7 +15,7 @@
     "url": "git+https://github.com/coderofsalvation/parse-server-jsreactor.git"
   },
   "dependencies": {
-    "jsreactor": "",
+    "@coderofsalvation/jsreactor": "",
     "p-memoize": "^3.1.0"
   },
   "author": "",
