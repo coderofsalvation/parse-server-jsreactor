@@ -42,4 +42,4 @@ var res = await Parse.Cloud.run('bre',{foo:1})
 A channel is basically an object which describes triggers and/or actions.
 For example, Twilio (the smsservice) can be seen as a channel with triggers (receive sms) and actions (send sms)
 
-> search for `jsreactor-channel` on npm, and check the [jsreactor docs](https://npmjs.com/package/jsreactor) on how to use them    
+> search for `jsreactor-channel` on npm, and check the [jsreactor docs](https://npmjs.com/package/@coderofsalvation/jsreactor) on how to use them    
