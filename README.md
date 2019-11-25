@@ -1,7 +1,7 @@
 > WARNING: this project is in BETA
 
 An flexible IFTTT-engine with generated gui. 
-This is basically a wrapper for [jsreactor](https://npmjs.com/package/jsreactor).
+This is basically a wrapper for [jsreactor](https://npmjs.com/package/@coderofsalvation/jsreactor).
 
 ![](https://raw.githubusercontent.com/coderofsalvation/parse-server-jsreactor/master/doc/bre.gif)
 
