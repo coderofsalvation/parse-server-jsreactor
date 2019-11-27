@@ -17,7 +17,7 @@ var BRE         = require('parse-server-jsreactor')
 var Database    = require('parse-server-jsreactor/channel/Database')
 var Input       = BRE.Channel.Input 
 
-var bre = new BRE(Parse)
+var bre = new BRE(Parse,{languages:['EN']})
 bre.Parse = Parse    // allow channels to access Parse
 
 new Database({bre})
@@ -43,3 +43,25 @@ A channel is basically an object which describes triggers and/or actions.
 For example, Twilio (the smsservice) can be seen as a channel with triggers (receive sms) and actions (send sms)
 
 > search for `jsreactor-channel` on npm, and check the [jsreactor docs](https://npmjs.com/package/@coderofsalvation/jsreactor) on how to use them    
+
+## Extending the Rule-class
+
+Feel free to just add columns from the Parse dashboard, as your used to.
+However, in case your user-interface is using jsonschema to generate itself, you might want to read along:
+
+> NOTE: during runtime this package automatically creates a *Rule* parseClass to store the rules. In case you want to add custom properties to that class then write your own adapter and pass it as `new BRE(Parse,myAdapter)` (Just copy the adapter-code from index.js and modify it)
+
+Bear in mind that you probably want to patch the `breGetSchema`-endpoint to hint your custom fields to your frontend-app.
+
+## Forwarding the Parse-email-adapter to BRE
+
+In case you want to enjoy editable sendgrid templates when using Parse's  __password reset__ feature, you can redirect all email to the BRE:
+
+> Just use this emailadapter when initializing Parse:
+
+```
+    verifyUserEmails:true,
+    emailAdapter: require('parse-server-jsreactor').emailAdapter(),
+```
+
+> NOTE: dont forget to run `npm install jsreactor-channel-sendgrid` and read its [docs](https://npmjs.com/package/jsreactor-channel-sendgrid)

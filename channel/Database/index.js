@@ -26,31 +26,34 @@ module.exports = function(opts){
     this.description = "Detects database changes"
             
     this.init = async () => {
-        // always first check if config changed
-        Parse.Config.get()
-        .then( async (cfg) => {
-            opts.classes = cfg.attributes.breClasses || []
-            var promises = opts.classes.map( (c) => this.getSchema(c) )
-            await Promise.all(promises)
-            this.trigger = { schema:require('./trigger/schema')(opts) }
-            this.action  = { schema:require('./action/schema')(opts)  }
-            this.definitions = { 
-                dbpath: { type:'string',enum:dbpaths, title:"attribute"}
-            }
-            opts.classes.map( (c) => {
-                if( listeners[c] ) return // only once
-                console.log("registering "+c+".afterSave")
-                var cb = function(className,request){
-                    console.log(c+".afterSave")
-                    bre.run({afterSave:true,className,request:()=>request})
-                    .then( console.log )
-                    .catch( (e) => console.error(e.stack) )
-                }.bind(this,c)  
-                opts.bre.onDatabaseSave( c, cb )
-                listeners[c] = true                   
-            })
-        })
 
+        // always first check if config changed
+        var cfg = await Parse.Config.get()
+        opts.classes = cfg.attributes.breClasses || []
+        var promises = opts.classes.map( (c) => this.getSchema(c) )
+        await Promise.all(promises)
+        this.trigger = { schema:require('./trigger/schema')(opts) }
+        this.action  = { schema:require('./action/schema')(opts)  }
+        this.definitions = { 
+            dbpath: { type:'string',enum:dbpaths, title:"attribute",options:{inputAttributes:{placeholder:".foo"}}}
+        }
+        opts.classes.map( (c) => {
+            if( listeners[c] ) return // only once
+            console.log("registering "+c+".afterSave")
+            var cb = (type) => function(className,request){
+                var input = {className,object:request.object}
+                input[type] = true
+                bre.run(input)
+                .then( console.log )
+                .catch( (e) => console.error(e.stack) )
+            }.bind(this,c)  
+            Parse.Cloud.afterSave(c,cb('beforeSave'))
+            Parse.Cloud.afterSave(c,cb('afterSave'))
+            Parse.Cloud.beforeDelete(c,cb('beforeDelete'))
+            Parse.Cloud.afterDelete(c,cb('afterDelete')) 
+            listeners[c] = true                   
+        })
+    
     }
 
     opts.bre.addChannel(this)

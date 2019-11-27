@@ -2,25 +2,28 @@ module.exports = function(opts){
     var bre = opts.bre
     
     // channel specific operators
-    var conditions = (slug) => [
+    var conditions = (slug) => ([
         {
             type:"object",
             title:slug+"was created",
             properties:{
-                type: bre.addType('DBcreated', async (input,cfg) => input.afterSave && input.className == cfg.item ),
+                type: bre.addType('DBcreated', async (input,cfg) => {
+                    return input.beforeSave && input.className == cfg.item && !input.object.objectId
+                }),
                 item:{
                     type:"string",
                     enum: opts.classes,
                     default: opts.classes.length ? opts.classes[0]: ' '
                 }
             }
-        }
-        /*
+        },
         {
             type:"object",
-            title:slug+"was updated",
+            title:slug+" was updated",
             properties:{
-                type:{type:"string",default:"DBupdated",pattern:"^DBupdated$",options:{hidden:true}},
+                type: bre.addType('DBupdated', async (input,cfg) => {
+                    return input.afterSave && input.className == cfg.item
+                }),
                 item:{
                     type:"string",
                     enum: opts.classes,
@@ -32,7 +35,9 @@ module.exports = function(opts){
             type:"object",
             title:slug+"was deleted",
             properties:{
-                type:{type:"string",default:"DBdeleted",pattern:"^DBdeleted$",options:{hidden:true}},
+                type: bre.addType('DBdeleted', async (input,cfg) => {
+                    return input.afterDelete && input.className == cfg.item
+                }),
                 item:{
                     type:"string",
                     enum: opts.classes,
@@ -42,18 +47,28 @@ module.exports = function(opts){
         },
         {
             type:"object",
-            title:slug+"property equals",
+            title:"user views "+slug+"(s)",
             properties:{
-                type:{type:"string",default:"DBequals",pattern:"^DBequals$",options:{hidden:true}},
+                type: bre.addType('DBfind', async (input,cfg) => {
+                    return input.beforeFind
+                }),
                 item:{
                     type:"string",
                     enum: opts.classes,
                     default: opts.classes.length ? opts.classes[0]: ' '
                 }
             }
-        }
-        */
-    ]
+        },
+        {
+            type:"object",
+            title:"user logs in",
+            properties:{
+                type: bre.addType('DBlogin', async (input,cfg) => {
+                    return input.beforeLogin
+                })
+            }
+        }         
+    ])
     
     // default conditional operators from json-logic-schema
     var operators = require('jsreactor/schema.operators')

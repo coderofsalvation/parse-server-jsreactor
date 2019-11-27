@@ -1,9 +1,10 @@
-var BRE = require('jsreactor')
-var _   = require('jsreactor/_')
+var BRE = require('@coderofsalvation/jsreactor')
+var _   = require('@coderofsalvation/jsreactor/_')
 
-function bre(Parse){
+function bre(Parse, opts){
+    opts = opts || {}
     
-    var parseAdapter = async (bre) => {
+    var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
         bre.createRuleSchema = async () => new Promise((resolve,reject) => {
             var schema = new Parse.Schema("Rule")
@@ -12,7 +13,6 @@ function bre(Parse){
             .catch( (e) => {
                 schema.addString('name');
                 schema.addString('language')
-                schema.addString('triggerChannel')
                 schema.addBoolean('disabled')
                 schema.addObject('config')
                 schema.save()
@@ -48,7 +48,6 @@ function bre(Parse){
         }
 
         bre.onDatabaseSave = (table,cb) => {
-            Parse.Cloud.afterSave(table,cb) 
         }
 
         bre.Parse = Parse
@@ -72,7 +71,7 @@ function bre(Parse){
             console.log(`defining Parse.Cloud.${i}`)
             Parse.Cloud.define(i, function(cb,req){
                 var userfields = ['objectId','firstName','lastName','email','username','createdAt','updatedAt']
-                req.params.user = _.pluck(userfields,req.user.toJSON())
+                if( req.user ) req.params.user = _.pluck(userfields,req.user.toJSON())
                 if( !bre.log.parse ) enableParseLogging(req)
                 return cb(req.params)
             }.bind(bre,bre.endpoint[i]))
@@ -83,7 +82,7 @@ function bre(Parse){
         .catch(console.error)
     }
 
-    var b = BRE(parseAdapter)
+    var b = BRE(parseAdapter,opts)
     b.init() // first init
     
     return b
@@ -94,5 +93,7 @@ bre.Channel = {
     HelloWorld: require('jsreactor/channel/HelloWorld'),
     Javascript: require('jsreactor/channel/Javascript')
 }
+
+bre.emailAdapter = require('./emailAdapter')
 
 module.exports = bre
