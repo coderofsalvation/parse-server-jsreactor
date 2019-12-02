@@ -18,7 +18,6 @@ var Database    = require('parse-server-jsreactor/channel/Database')
 var Input       = BRE.Channel.Input 
 
 var bre = new BRE(Parse,{languages:['EN']})
-bre.Parse = Parse    // allow channels to access Parse
 
 new Database({bre})
 new Input({bre})
@@ -31,8 +30,8 @@ Then specify which (database) classes you want to expose to it:
 ![](https://raw.githubusercontent.com/coderofsalvation/parse-server-jsreactor/master/doc/config.png)
 
 
-> NOTE All the Parse Config-variables are accessible (and refreshed when needed) in the channels thru the `opts`-variable.
-Therefore you could also move the `languages:['EN']`-array from the init-code here
+> NOTE: All the Parse Config-variables are accessible (and refreshed when needed) in the channels thru the `opts`-variable.
+Therefore you could also move the `languages:['EN']`-array from the init-code here (so it can be updated outside of the code)
 
 
 ## Running the BRE

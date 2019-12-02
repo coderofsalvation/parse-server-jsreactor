@@ -92,15 +92,16 @@ function bre(Parse, opts){
     }
 
     var b = BRE(parseAdapter,opts)
+    b.Parse = Parse
     b.init() // first init
     
     return b
 }
 
 bre.Channel = {
-    Input:      require('jsreactor/channel/Input'),
-    HelloWorld: require('jsreactor/channel/HelloWorld'),
-    Javascript: require('jsreactor/channel/Javascript')
+    Input:      require('@coderofsalvation/jsreactor/channel/Input'),
+    HelloWorld: require('@coderofsalvation/jsreactor/channel/HelloWorld'),
+    Javascript: require('@coderofsalvation/jsreactor/channel/Javascript')
 }
 
 bre.emailAdapter = require('./emailAdapter')
