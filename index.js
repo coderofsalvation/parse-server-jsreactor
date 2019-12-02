@@ -8,10 +8,13 @@ function bre(Parse, opts){
 
         var init = bre.init // monkeypatch it
         bre.init = async () => {
-            console.log("loading config from parse (and pass as opts to jsreactor)")
-            var cfg = await Parse.Config.get()
-            bre.opts = Object.assign(bre.opts,cfg.attributes)
+            if( bre.init.inited ){ // skip first time
+                console.log("loading config from parse (and pass as opts to jsreactor)")
+                var cfg = await Parse.Config.get()
+                bre.opts = Object.assign(bre.opts,cfg.attributes)
+            }
             await init()
+            bre.init.inited = true
         }
 
         bre.createRuleSchema = async () => new Promise((resolve,reject) => {
