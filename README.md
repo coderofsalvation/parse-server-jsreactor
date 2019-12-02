@@ -7,7 +7,7 @@ This is basically a wrapper for [jsreactor](https://npmjs.com/package/@coderofsa
 
 ## Installation
 
-    npm install parse-server-jsreactor --save
+    npm install parse-server-jsreactor @coderofsalvation/jsreactor --save
 
 then in your cloud-code entrypoint (`cloud/index.js` e.g.) add this:
 
@@ -43,6 +43,16 @@ A channel is basically an object which describes triggers and/or actions.
 For example, Twilio (the smsservice) can be seen as a channel with triggers (receive sms) and actions (send sms)
 
 > search for `jsreactor-channel` on npm, and check the [jsreactor docs](https://npmjs.com/package/@coderofsalvation/jsreactor) on how to use them    
+
+## Live-coding cloud functions
+
+Setup a cloudfunction-trigger (with name `foo` e.g.), and add a javascript-action like so:
+
+```
+Parse.Cloud.on.foo = (req) => new Promise((resolve,reject) => {
+  resolve({foo:123})
+})
+```
 
 ## Extending the Rule-class
 

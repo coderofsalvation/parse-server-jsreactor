@@ -1,6 +1,6 @@
 {
   "name": "parse-server-jsreactor",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "> WARNING: this project is in BETA and under huge development",
   "main": "index.js",
   "directories": {
@@ -15,7 +15,6 @@
     "url": "git+https://github.com/coderofsalvation/parse-server-jsreactor.git"
   },
   "dependencies": {
-    "@coderofsalvation/jsreactor": "",
     "p-memoize": "^3.1.0"
   },
   "author": "",

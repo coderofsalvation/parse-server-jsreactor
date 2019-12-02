@@ -55,9 +55,10 @@ function bre(Parse, opts){
         function enableParseLogging(req){
             var old = bre.log 
             var e   = console.error
-            bre.log = function(str){
+            bre.log = function(str,prefix){
+                str = (prefix ? prefix : "bre: ") + `${str}`
                 old(str)
-                req.log.info("BRE: "+str)
+                req.log.info(str)
             }
             console.error = function(i){
                 e(i)
