@@ -6,6 +6,14 @@ function bre(Parse, opts){
     
     var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
+        var init = bre.init // monkeypatch it
+        bre.init = async () => {
+            console.log("loading config from parse (and pass as opts to jsreactor)")
+            var cfg = await Parse.Config.get()
+            bre.opts = Object.assign(bre.opts,cfg.attributes)
+            await init()
+        }
+
         bre.createRuleSchema = async () => new Promise((resolve,reject) => {
             var schema = new Parse.Schema("Rule")
             schema.get()
