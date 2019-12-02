@@ -71,7 +71,7 @@ module.exports = function(opts){
     ])
     
     // default conditional operators from json-logic-schema
-    var operators = require('jsreactor/schema.operators')
+    var operators = require('@coderofsalvation/jsreactor/schema.operators')
     
     return conditions('object ')
                 .concat(operators('value ',{ type:"string","$ref":"#/definitions/dbpath" }))
