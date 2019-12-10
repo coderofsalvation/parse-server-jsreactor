@@ -29,6 +29,7 @@ Then specify which (database) classes you want to expose to it:
 
 ![](https://raw.githubusercontent.com/coderofsalvation/parse-server-jsreactor/master/doc/config.png)
 
+Do yourself a favor and **don't** include the `Rule`-class (recursion:the universe will explode)
 
 > NOTE: All the Parse Config-variables are accessible (and refreshed when needed) in the channels thru the `opts`-variable.
 Therefore you could also move the `languages:['EN']`-array from the init-code here (so it can be updated outside of the code)

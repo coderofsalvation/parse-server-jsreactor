@@ -7,8 +7,6 @@ module.exports = function(opts){
     this.description = "triggers actions based on user state"  
     
     this.init = async () => {
-        opts.bre.log("registering "+this.title)
-        
         this.trigger = {
             schema:  [
                 {

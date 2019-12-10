@@ -1,3 +1,5 @@
+let _ = require('@coderofsalvation/jsreactor/_')
+
 module.exports = function(opts){
     var bre = opts.bre
     
@@ -36,7 +38,21 @@ module.exports = function(opts){
             title:slug+"is being created",
             properties:{
                 type: bre.addType('onDatabaseCreate', async (input,cfg) => {
-                    return input.beforeSave && input.className == cfg.item && !input.object.objectId
+                    return input.beforeSave && input.className == cfg.item && !_.get(input,'object.objectId')
+                }),
+                item:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' '
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"was created",
+            properties:{
+                type: bre.addType('onDatabaseCreated', async (input,cfg) => {
+                    return input.afterSave && input.className == cfg.item && !_.get(input,'object.objectId')
                 }),
                 item:{
                     type:"string",

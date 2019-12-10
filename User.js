@@ -22,7 +22,8 @@ var User = function(){
 
   this.extend = (user,target) => new Promise( async (resolve,reject) => {
     var userfields = ['objectId','firstName','lastName','email','username','createdAt','updatedAt','roles']
-    target.user = _.pluck(userfields,user.toJSON())
+    var User = user.toJSON()
+    target.user = _.pluck(userfields,User)
     target.user.roles = await this.getRoles(user)
     target.user.roles.map( (r) => target.user[r] = true )
     resolve()

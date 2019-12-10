@@ -27,7 +27,6 @@ module.exports = function(opts){
     this.description = "Detects database changes"
             
     this.init = async () => {
-
         // always first check if config changed
         var cfg = await Parse.Config.get()
         opts.classes = cfg.attributes.breClasses || []
@@ -47,12 +46,15 @@ module.exports = function(opts){
                 if( request.user ) await User.extend(request.user,input) // convenient flat userobject useable by triggers
                 await bre.run(input)
                 if( type.match(/^after/) ) return request.objects
+                if( className == "User" ) return request.object
             }
             var createCallback = (type) => cb.bind(this,type,c)
-            Parse.Cloud.afterFind(c,    createCallback('afterFind'))
-            Parse.Cloud.beforeSave(c,   createCallback('beforeSave'))
-            Parse.Cloud.afterSave(c,    createCallback('afterSave'))
-            Parse.Cloud.afterDelete(c,  createCallback('afterDelete')) 
+            var className = c
+            if( c == "User" ) className = Parse.User // odd exception case see: http://parseplatform.org/Parse-SDK-JS/api/2.10.0/Parse.Cloud.html#.beforeSave
+            Parse.Cloud.afterFind(className,    createCallback('afterFind'))
+            Parse.Cloud.beforeSave(className,   createCallback('beforeSave'))
+            Parse.Cloud.afterSave(className,    createCallback('afterSave'))
+            Parse.Cloud.afterDelete(className,  createCallback('afterDelete')) 
             listeners[c] = true                   
         })
     

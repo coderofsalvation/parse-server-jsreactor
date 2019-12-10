@@ -20,7 +20,6 @@ module.exports = function(opts){
     this.getRoles = pMemoize(this.getRoles,{maxAge: opts.MEMOIZE_AGE})
 
     this.init = async () => {
-        opts.bre.log("registering "+this.title)
         this.roles = await this.getRoles()
         
         this.trigger = {
