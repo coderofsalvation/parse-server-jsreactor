@@ -5,9 +5,37 @@ module.exports = function(opts){
     var conditions = (slug) => ([
         {
             type:"object",
-            title:slug+"was created",
+            title:slug+"is requested",
             properties:{
-                type: bre.addType('DBcreated', async (input,cfg) => {
+                type: bre.addType('onDatabaseRequest', async (input,cfg) => {
+                    return input.beforeFind && input.className == cfg.item
+                }),
+                item:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' '
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"is being returned",
+            properties:{
+                type: bre.addType('onDatabaseReturn', async (input,cfg) => {
+                    return input.afterFind && input.className == cfg.item
+                }),
+                item:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' '
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"is being created",
+            properties:{
+                type: bre.addType('onDatabaseCreate', async (input,cfg) => {
                     return input.beforeSave && input.className == cfg.item && !input.object.objectId
                 }),
                 item:{
@@ -19,9 +47,9 @@ module.exports = function(opts){
         },
         {
             type:"object",
-            title:slug+" was updated",
+            title:slug+"was updated",
             properties:{
-                type: bre.addType('DBupdated', async (input,cfg) => {
+                type: bre.addType('onDatabaseUpdate', async (input,cfg) => {
                     return input.afterSave && input.className == cfg.item
                 }),
                 item:{
@@ -35,22 +63,8 @@ module.exports = function(opts){
             type:"object",
             title:slug+"was deleted",
             properties:{
-                type: bre.addType('DBdeleted', async (input,cfg) => {
+                type: bre.addType('onDatabaseDelete', async (input,cfg) => {
                     return input.afterDelete && input.className == cfg.item
-                }),
-                item:{
-                    type:"string",
-                    enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
-                }
-            }
-        },
-        {
-            type:"object",
-            title:"user views "+slug+"(s)",
-            properties:{
-                type: bre.addType('DBfind', async (input,cfg) => {
-                    return input.beforeFind
                 }),
                 item:{
                     type:"string",
@@ -63,7 +77,7 @@ module.exports = function(opts){
             type:"object",
             title:"user logs in",
             properties:{
-                type: bre.addType('DBlogin', async (input,cfg) => {
+                type: bre.addType('Parse.beforeLogin', async (input,cfg) => {
                     return input.beforeLogin
                 })
             }

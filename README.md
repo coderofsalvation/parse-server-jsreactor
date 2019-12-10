@@ -33,13 +33,14 @@ Then specify which (database) classes you want to expose to it:
 > NOTE: All the Parse Config-variables are accessible (and refreshed when needed) in the channels thru the `opts`-variable.
 Therefore you could also move the `languages:['EN']`-array from the init-code here (so it can be updated outside of the code)
 
-
 ## Running the BRE
 
 This will pass {foo:1} into the BRE (channels)
 ```
 var res = await Parse.Cloud.run('bre',{foo:1})
 ```
+
+> NOTE: set environment variable `MEMOIZE_AGE=10000` to change database-call-cache for 10 seconds (getting roles, getting schemas) etc. (default is 15sec on production, 5sec on localhost)
 
 ## What are Channels?
 

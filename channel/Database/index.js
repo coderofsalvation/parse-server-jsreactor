@@ -1,4 +1,5 @@
 var pMemoize = require('p-memoize')
+var User     = require('./../../User')
 
 module.exports = function(opts){
     opts             = opts || {}
@@ -20,7 +21,7 @@ module.exports = function(opts){
         .catch(reject)
     })
     // cache the output of this function for 2 mins  1000*60*2
-    this.getSchema = pMemoize(this.getSchema,{maxAge:5000})
+    this.getSchema = pMemoize(this.getSchema,{maxAge:opts.MEMOIZE_AGE})
 
     this.title       = "Database"
     this.description = "Detects database changes"
@@ -39,18 +40,19 @@ module.exports = function(opts){
         }
         opts.classes.map( (c) => {
             if( listeners[c] ) return // only once
-            console.log("registering "+c+".afterSave")
-            var cb = (type) => function(className,request){
-                var input = {className,object:request.object}
+            console.log("registering "+c+".afterSave etc hooks")
+            var cb = async (type,className,request) => {
+                var input = {className,request}
                 input[type] = true
-                bre.run(input)
-                .then( console.log )
-                .catch( (e) => console.error(e.stack) )
-            }.bind(this,c)  
-            Parse.Cloud.afterSave(c,cb('beforeSave'))
-            Parse.Cloud.afterSave(c,cb('afterSave'))
-            Parse.Cloud.beforeDelete(c,cb('beforeDelete'))
-            Parse.Cloud.afterDelete(c,cb('afterDelete')) 
+                if( request.user ) await User.extend(request.user,input) // convenient flat userobject useable by triggers
+                await bre.run(input)
+                if( type.match(/^after/) ) return request.objects
+            }
+            var createCallback = (type) => cb.bind(this,type,c)
+            Parse.Cloud.afterFind(c,    createCallback('afterFind'))
+            Parse.Cloud.beforeSave(c,   createCallback('beforeSave'))
+            Parse.Cloud.afterSave(c,    createCallback('afterSave'))
+            Parse.Cloud.afterDelete(c,  createCallback('afterDelete')) 
             listeners[c] = true                   
         })
     
