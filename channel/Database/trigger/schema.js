@@ -38,7 +38,7 @@ module.exports = function(opts){
             title:slug+"is being created",
             properties:{
                 type: bre.addType('onDatabaseCreate', async (input,cfg) => {
-                    return input.beforeSave && input.className == cfg.item && !_.get(input,'object.objectId')
+                    return input.beforeSave && input.className == cfg.item && input.request.object.isNew()
                 }),
                 item:{
                     type:"string",
@@ -49,10 +49,10 @@ module.exports = function(opts){
         },
         {
             type:"object",
-            title:slug+"was created",
+            title:slug+"is created",
             properties:{
                 type: bre.addType('onDatabaseCreated', async (input,cfg) => {
-                    return input.afterSave && input.className == cfg.item && !_.get(input,'object.objectId')
+                    return input.afterSave && input.className == cfg.item && input.request.object.existed() === false
                 }),
                 item:{
                     type:"string",

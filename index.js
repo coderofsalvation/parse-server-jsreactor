@@ -7,8 +7,6 @@ function bre(Parse, opts){
     opts = opts || {}
     opts.MEMOIZE_AGE = process.env.MEMOIZE_AGE || (process.env.NODE_ENV == 'production' ? 120000 : 5000)
     
-    Parse.Cloud.useMasterKey() // on the server we're safe to use masterkey
-
     var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
         bre.createRuleSchema = async () => new Promise((resolve,reject) => {
@@ -79,6 +77,7 @@ function bre(Parse, opts){
             var old = bre.log 
             var e   = console.error
             bre.log = function(str,prefix){
+                if( typeof str != "string" ) str = JSON.stringify(str,null,2)
                 str = (prefix ? prefix : "bre: ") + `${str}`
                 old(str)
                 req.log.info(str)
