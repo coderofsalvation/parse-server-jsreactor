@@ -7,20 +7,20 @@ module.exports = function(opts){
     var Parse   = bre.Parse
     var listeners = {}
     var schemas = []
-    var dbpaths = []
+    this.dbpaths = {}
 
     this.getSchema = (c) => new Promise( (resolve,reject) => {
         console.log("retrieving schema of class "+c)
         var schema = new Parse.Schema(c)
         schema.get()
         .then( (schema) => {
-            for( var a in schema.fields ) dbpaths.push(`${c}.${a}`)
+            for( var a in schema.fields ) this.dbpaths[`${c}.${a}`] = true
             return schema
         })
         .then(resolve)
         .catch(reject)
     })
-    // cache the output of this function for 2 mins  1000*60*2
+    // cache the output of this function for 5 secs
     this.getSchema = pMemoize(this.getSchema,{maxAge:opts.MEMOIZE_AGE})
 
     this.title       = "Database"
@@ -35,7 +35,7 @@ module.exports = function(opts){
         this.trigger = { schema:require('./trigger/schema')(opts) }
         this.action  = { schema:require('./action/schema')(opts)  }
         this.definitions = { 
-            dbpath: { type:'string',enum:dbpaths, title:"attribute",options:{inputAttributes:{placeholder:".foo"}}}
+            dbpath: { type:'string',enum:Object.keys(this.dbpaths), title:"attribute",options:{inputAttributes:{placeholder:".foo"}}}
         }
         opts.classes.map( (c) => {
             if( listeners[c] ) return // only once
