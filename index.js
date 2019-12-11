@@ -79,7 +79,7 @@ function bre(Parse, opts){
             bre.log = function(str,prefix){
                 if( typeof str != "string" ) str = JSON.stringify(str,null,2)
                 str = (prefix ? prefix : "bre: ") + `${str}`
-                old(str)
+                if( typeof old == "function" ) old(str)
                 req.log.info(str)
             }
             console.error = function(i){
