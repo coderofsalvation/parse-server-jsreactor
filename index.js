@@ -5,7 +5,7 @@ var User = require('./User')
 
 function bre(Parse, opts){
     opts = opts || {}
-    opts.MEMOIZE_AGE = process.env.MEMOIZE_AGE || (process.env.NODE_ENV == 'production' ? 120000 : 5000)
+    opts.MEMOIZE_AGE = process.env.MEMOIZE_AGE || 2000
     
     var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
@@ -23,10 +23,10 @@ function bre(Parse, opts){
                     if( globalSchema ) c = Object.assign(c,globalSchema)
                     opts.extraColumns[i] = c
                 }
-                resolve()
             }
             schema.get()
             .then( (s)  => detectExtraColumns(s) )
+            .then( resolve )
             .catch( (e) => {
                 b.log("fallback: created Rule-Class schema in db")
                 schema.addString('name');
@@ -39,9 +39,11 @@ function bre(Parse, opts){
    
         // lets specify the function to load rules from DB
         bre.loadRuleConfigs = () => {
-            var q    = new Parse.Query("Rule")
+            var q    = new Parse.Query("Rule").equalTo("disabled",false)
             return new Promise( (resolve, reject) => {
-                q.find()
+                bre
+                .createRuleSchema()
+                .then( () => q.find() )
                 .then( (rules) => rules.map( (r) => r.toJSON() ) ) 
                 .then( resolve )
                 .catch( (e) => {
@@ -100,10 +102,7 @@ function bre(Parse, opts){
             }
             Parse.Cloud.define(i, endpoint.bind(bre,bre.endpoint[i]))
         }
-    
-        bre.createRuleSchema()
-        .then( () => b.log("checking Rule-class: exist") )
-        .catch(console.error)
+
     }
 
     var b = BRE(parseAdapter,opts)
