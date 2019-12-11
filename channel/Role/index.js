@@ -6,7 +6,7 @@ module.exports = function(opts){
     var bre          = opts.bre
     var Parse        = bre.Parse
     this.title       = "Role" // this is the channel name
-    this.description = "triggers actions based on user Role"  
+    this.description = "filters input based on user Role"  
     this.roles = []
     this.getRoles = (c) => new Promise( (resolve,reject) => {
         console.log("getting roles")

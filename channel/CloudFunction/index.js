@@ -5,6 +5,8 @@ module.exports = function(opts){
     this.description = "Parse custom API endpoint"  
     this.init = async () => {
 
+        var docs = `click for <a href="${process.env.JSREACTOR_CLOUDFUNCTION_DOC ? process.env.JSREACTOR_CLOUDFUNCTION_DOC : "https://github.com/coderofsalvation/parse-server-jsreactor/blob/master/doc/cloudfunction.md"}" target="_blank">documentation here</a>`
+
         this.cloudFunction = (input,cfg,results) => new Promise( async (resolve,reject) => {
             // bind cloudfunctions to Parse object so that actions can access it
             Parse.Cloud.on = Parse.Cloud.on || {}
@@ -24,10 +26,10 @@ module.exports = function(opts){
                 {
                     type:"object",
                     title:" ",
-                    description:"dont use cloud functions (unless you need REST-access)",
+                    description:docs,
                     properties:{
                         type: bre.addType('cloudFunction', this.cloudFunction ),
-                        name:{ type:"string",default:"foo",description:"define handler in (javascript) action using:\n\n\tParse.Cloud.on.foo = async (req) => { ...result_or_promise... }"},
+                        name:{ type:"string",default:"foo"},
                         config:{
                             type:"object",
                             title:"edit input jsonschema",

@@ -4,7 +4,7 @@ module.exports = function(opts){
     var bre          = opts.bre
     var Parse        = bre.Parse
     this.title       = "User" // this is the channel name
-    this.description = "triggers actions based on user state"  
+    this.description = "filters input based on user state"  
     
     this.init = async () => {
         this.trigger = {

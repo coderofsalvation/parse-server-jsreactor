@@ -3,6 +3,8 @@ let _ = require('@coderofsalvation/jsreactor/_')
 module.exports = function(opts){
     var bre = opts.bre
     
+    var docs = `click for <a href="${process.env.JSREACTOR_DATABASE_DOC ? process.env.JSREACTOR_DATABASE_DOC : "https://github.com/coderofsalvation/parse-server-jsreactor/blob/master/doc/database.md"}" target="_blank">documentation here</a>`
+
     // channel specific operators
     var conditions = (slug) => ([
         {
@@ -15,7 +17,8 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },
@@ -29,7 +32,8 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },
@@ -43,7 +47,8 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },
@@ -57,7 +62,8 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },
@@ -71,7 +77,23 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"is being deleted",
+            properties:{
+                type: bre.addType('onDatabaseBeforeDelete', async (input,cfg) => {
+                    return input.beforeDelete && input.className == cfg.item
+                }),
+                item:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },
@@ -85,7 +107,8 @@ module.exports = function(opts){
                 item:{
                     type:"string",
                     enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' '
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
                 }
             }
         },

@@ -55,6 +55,7 @@ module.exports = function(opts){
             Parse.Cloud.beforeSave(className,   createCallback('beforeSave'))
             Parse.Cloud.afterSave(className,    createCallback('afterSave'))
             Parse.Cloud.afterDelete(className,  createCallback('afterDelete')) 
+            Parse.Cloud.beforeDelete(className,  createCallback('beforeDelete'))
             listeners[c] = true                   
         })
     
