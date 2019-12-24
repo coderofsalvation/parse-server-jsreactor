@@ -24,7 +24,7 @@ module.exports = function(opts){
     this.getSchema = pMemoize(this.getSchema,{maxAge:opts.MEMOIZE_AGE})
 
     this.title       = "Database"
-    this.description = "Detects database changes"
+    this.description = "database events"
             
     this.init = async () => {
         // always first check if config changed
@@ -32,11 +32,12 @@ module.exports = function(opts){
         opts.classes = cfg.attributes.breClasses || []
         var promises = opts.classes.map( (c) => this.getSchema(c) )
         await Promise.all(promises)
-        this.trigger = { schema:require('./trigger/schema')(opts) }
-        this.action  = { schema:require('./action/schema')(opts)  }
         this.definitions = { 
             dbpath: { type:'string',enum:Object.keys(this.dbpaths), title:"attribute",options:{inputAttributes:{placeholder:".foo"}}}
         }
+        this.trigger = { schema:require('./trigger/schema')(opts) }
+        this.action  = { schema:require('./action/schema')(opts)  }
+        
         opts.classes.map( (c) => {
             if( listeners[c] ) return // only once
             console.log("registering "+c+".afterSave etc hooks")
