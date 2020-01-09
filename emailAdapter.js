@@ -18,12 +18,21 @@ module.exports = mailOptions => {
     return Object.freeze({sendMail: sendMail})
   }
 
+  let getUser = (user) => {
+    var u  = {}
+    var _u = user.toJSON()
+    for ( var i in _u )
+      if( !i.match(/^_/) ) u[i] = _u[i] // only allow public vars 
+    return u
+  }
+
   customized.sendMail = sendMail
 
   customized.sendVerificationEmail = options => {
     Parse.Cloud.run("bre",{
       verifyUser:true,
       link: options.link,
+      user: getUser(options.user),
       email: options.user.get('email'),
       username: options.user.get('username'),
       appName: options.appName
@@ -33,6 +42,7 @@ module.exports = mailOptions => {
   customized.sendPasswordResetEmail = options => {
     Parse.Cloud.run("bre",{
       passwordReset:true,
+      user: getUser(options.user),
       link: options.link,
       email: options.user.get('email'),
       username: options.user.get('username'),
