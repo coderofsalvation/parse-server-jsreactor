@@ -25,7 +25,7 @@ module.exports = function(opts){
                     type:"object",
                     title:"every 6 hours",
                     properties:{
-                        type: bre.addType('ever6Hour', (input,cfg,results) => input.scheduler6Hourly === true ),
+                        type: bre.addType('every6Hour', (input,cfg,results) => input.scheduler6Hourly === true ),
                     }
                 },
                 {

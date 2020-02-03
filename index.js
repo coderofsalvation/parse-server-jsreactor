@@ -45,6 +45,7 @@ function bre(Parse, opts){
                 .createRuleSchema()
                 .then( () => q.find() )
                 .then( (rules) => rules.map( (r) => r.toJSON() ) ) 
+                .then( (rules) => rules.filter( (r) => _.get(r,'config.extra.disabled') ? false : r) )
                 .then( resolve )
                 .catch( (e) => {
                     console.error(e)
@@ -116,7 +117,8 @@ bre.Channel = {
     Input:      require('@coderofsalvation/jsreactor/channel/Input'),
     HelloWorld: require('@coderofsalvation/jsreactor/channel/HelloWorld'),
     Javascript: require('@coderofsalvation/jsreactor/channel/Javascript'),
-    Server:     require('@coderofsalvation/jsreactor/channel/Server')
+    Server:     require('@coderofsalvation/jsreactor/channel/Server'),
+    //Date:       require('@coderofsalvation/jsreactor/channel/Date')
 }
 
 bre.emailAdapter = require('./emailAdapter')
