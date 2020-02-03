@@ -8,7 +8,7 @@ module.exports = function(opts){
     var bre          = opts.bre
     var Parse        = bre.Parse
     this.title       = "Rule" // this is the channel name
-    this.description = "execute other rule(s)"  
+    this.description = " "  
 
     
     this.createWaveSchema = () => {
@@ -106,7 +106,17 @@ module.exports = function(opts){
 
     this.init = async () => {
         this.trigger = {
-            schema:  []
+            schema:  [
+                {
+                    type:"object",
+                    title:"other rule triggered this rule",
+                    properties:{
+                        type: bre.addType('onRuleWave', async (input,cfg) => {
+                            return input.getRuleWave !== undefined
+                        })
+                    }
+                },
+            ]
         }
 
         this.getRules = () => {
@@ -135,6 +145,7 @@ module.exports = function(opts){
             schema: [
                 {
                     type:"object",
+                    title:"execute rule(s)",
                     //description:"halt wave using javascript: delete input.user.waves[rule_id]",
                     properties:{
                         type: bre.addType('rule', this.setupWave ),
