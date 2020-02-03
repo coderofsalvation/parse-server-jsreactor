@@ -31,7 +31,12 @@ Parse = {
                     resolve()
                 })
             }
-            return new x()
+            x.prototype.toJSON = function(){
+                var o = {}
+                for( var i in this ) o[i] = this[i]
+                return o
+            }
+            return x
         }
     },
 
@@ -41,7 +46,8 @@ Parse = {
             var arr = 
             Parse.db[c].slice(this._skip, this._skip + this._limit || undefined)
             .map( (x) => {
-                var o = Parse.Object.extend(c)
+                var O = Parse.Object.extend(c)
+                var o = new O()
                 for( var i in x ) o.set(i,x[i])
                 return o
             })
