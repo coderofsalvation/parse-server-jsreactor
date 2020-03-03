@@ -4,8 +4,10 @@ module.exports = function(z){
 
     z.test('test Parse mock',  async (t) => {
         var n = 5
+        var F = Parse.Object.extend('Foo')
+            
         for( var i = 0; i < n; i++ ){
-            var f = Parse.Object.extend('Foo')
+            var f = new F()
             await f.save()
         }
         var q = new Parse.Query("Foo")

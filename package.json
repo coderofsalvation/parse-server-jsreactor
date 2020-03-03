@@ -1,6 +1,6 @@
 {
   "name": "parse-server-jsreactor",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "> WARNING: this project is in BETA and under huge development",
   "main": "index.js",
   "directories": {

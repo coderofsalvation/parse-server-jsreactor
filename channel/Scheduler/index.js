@@ -32,8 +32,7 @@ module.exports = function(opts){
                     type:"object",
                     title:"every day",
                     properties:{
-                        type: bre.addType('everyDay', (input,cfg,results) => input.schedulerDaily === true),
-                        day:{"$ref":"#/definitions/day"}
+                        type: bre.addType('everyDay', (input,cfg,results) => input.schedulerDaily === true)
                     }
                 },
                 {
@@ -50,6 +49,33 @@ module.exports = function(opts){
                     properties:{
                         type: bre.addType('everyMonth', (input,cfg,results) => input.schedulerMonthly === true ),
                         day:{"$ref":"#/definitions/day"}
+                    }
+                },
+                {
+                    type:"object",
+                    title:"match date in database",
+                    description:"trigger x days before/after date-column",
+                    properties:{
+                        type: bre.addType('matchDatabaseObject', async (input,cfg,results) => {
+                            if( !input.schedulerDaily ) return false
+                            var className = cfg.field.split('.')[0]
+                            var property  = cfg.field.split('.')[1]
+                            var date     = new Date()
+                            date.setDate( date.getDate() + cfg.offset + 1)
+                            date.setHours(0, 0, 0, 0);
+                            var datePlusOne  = new Date(date);
+                            datePlusOne.setDate(datePlusOne.getDate() + 1);
+                            var q = new Parse.Query(className) 
+                                        .greaterThanOrEqualTo(property, date)
+                                        .lessThan(property, datePlusOne)
+                                        .includeAll()
+                                       // .select('objectId')
+                            input.output.offset = String(cfg.offset).replace(/-/,'')
+                            input.output.items = await q.find()
+                            return input.output.items.length != 0 ? true : false
+                        }),
+                        field:{ type:"string","$ref":"#/definitions/dbpath" },
+                        offset:{ type:"integer",format:"number",description:"days",minimum:-360,maximum:360}
                     }
                 }                            
             ]

@@ -60,6 +60,16 @@ Parse = {
             this._skip = i
             return this 
         }
+        this.greaterThanOrEqualTo = (k,v) => {
+            console.log(`greaterThanOrEqualTo(${k},${v})`)
+            this._greaterThanOrEqualTo = [k,v]
+            return this
+        }
+        this.lessThan = (k,v) => {
+            console.log(`lessThan(${k},${v})`)
+            this._lessThan = [k,v]
+            return this
+        }
         this.limit = (i) => {
             this._limit = i
             return this
