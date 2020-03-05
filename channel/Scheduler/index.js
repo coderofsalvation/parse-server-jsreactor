@@ -61,7 +61,7 @@ module.exports = function(opts){
                             var className = cfg.field.split('.')[0]
                             var property  = cfg.field.split('.')[1]
                             var date     = new Date()
-                            date.setDate( date.getDate() + cfg.offset )
+                            date.setDate( date.getDate() + (-cfg.offset) )
                             date.setHours(0, 0, 0, 0);
                             var datePlusOne  = new Date(date);
                             datePlusOne.setDate(datePlusOne.getDate() + 1);
