@@ -57,7 +57,7 @@ module.exports = function(opts){
                     description:"trigger x days before/after date-column",
                     properties:{
                         type: bre.addType('matchDatabaseObject', async (input,cfg,results) => {
-                            if( !input.schedulerDaily ) return false
+                            if( !(input.schedulerDaily && cfg.offset && cfg.field) ) return false
                             var className = cfg.field.split('.')[0]
                             var property  = cfg.field.split('.')[1]
                             var date     = new Date()
@@ -68,10 +68,15 @@ module.exports = function(opts){
                             var q = new Parse.Query(className) 
                                         .greaterThanOrEqualTo(property, date)
                                         .lessThan(property, datePlusOne)
-                                        .includeAll()
-                                       // .select('objectId')
+                            
                             input.output.offset = String(cfg.offset).replace(/-/,'')
                             input.output.items = await q.find()
+                            var d = {
+                                a: new Date(date).toISOString().substr(0,10),
+                                b: new Date(datePlusOne).toISOString().substr(0,10)
+                            }
+                            console.log(`searching for ${className}-items with '${property}' between ${d.a} and ${d.b}`)
+                            console.log( (input.output.items ? input.output.items.length : 0 ) + ` ${className}'s found` )
                             return input.output.items.length != 0 ? true : false
                         }),
                         field:{ type:"string","$ref":"#/definitions/dbpath" },
