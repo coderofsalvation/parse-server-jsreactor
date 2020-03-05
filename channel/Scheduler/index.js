@@ -75,7 +75,7 @@ module.exports = function(opts){
                                 a: new Date(date).toISOString().substr(0,10),
                                 b: new Date(datePlusOne).toISOString().substr(0,10)
                             }
-                            console.log(`searching for ${className}-items with '${property}' between ${d.a} and ${d.b}`)
+                            console.log(`searching for ${className}-items with '${property}' between ${d.a} and ${d.b} (offset=${cfg.offset})`)
                             console.log( (input.output.items ? input.output.items.length : 0 ) + ` ${className}'s found` )
                             return input.output.items.length != 0 ? true : false
                         }),
