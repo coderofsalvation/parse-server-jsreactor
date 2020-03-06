@@ -7,6 +7,7 @@ module.exports = function(opts){
     var Parse        = bre.Parse
     this.title       = "Scheduler" // this is the channel name
     this.description = "automatic recurring trigger"  
+    var test = {type:"boolean","title":"test mode",format:"checkbox"}          
 
     this.init = async () => {
         this.definitions = { 
@@ -18,37 +19,42 @@ module.exports = function(opts){
                     type:"object",
                     title:"every hour",
                     properties:{
-                        type: bre.addType('everyHour', (input,cfg,results) => input.schedulerHourly === true ),
+                        type: bre.addType('everyHour', (input,cfg,results) => input.schedulerHourly === true || input.test && cfg.test),
+                        test
                     }
                 },
                 {
                     type:"object",
                     title:"every 6 hours",
                     properties:{
-                        type: bre.addType('every6Hour', (input,cfg,results) => input.scheduler6Hourly === true ),
+                        type: bre.addType('every6Hour', (input,cfg,results) => input.scheduler6Hourly === true || input.test && cfg.test),
+                        test
                     }
                 },
                 {
                     type:"object",
                     title:"every day",
                     properties:{
-                        type: bre.addType('everyDay', (input,cfg,results) => input.schedulerDaily === true)
+                        type: bre.addType('everyDay', (input,cfg,results) => input.schedulerDaily === true || input.test && cfg.test),
+                        test
                     }
                 },
                 {
                     type:"object",
                     title:"every X of the week",
                     properties:{
-                        type: bre.addType('everyWeek', (input,cfg,results) => input.schedulerWeekly === true ),
-                        day:{"$ref":"#/definitions/day"}
+                        type: bre.addType('everyWeek', (input,cfg,results) => input.schedulerWeekly === true || input.test && cfg.test ),
+                        day:{"$ref":"#/definitions/day"},
+                        test
                     }
                 },  
                 {
                     type:"object",
                     title:"every X of the month",
                     properties:{
-                        type: bre.addType('everyMonth', (input,cfg,results) => input.schedulerMonthly === true ),
-                        day:{"$ref":"#/definitions/day"}
+                        type: bre.addType('everyMonth', (input,cfg,results) => input.schedulerMonthly === true || input.test && cfg.test ),
+                        day:{"$ref":"#/definitions/day"},
+                        test
                     }
                 },
                 {
@@ -57,7 +63,7 @@ module.exports = function(opts){
                     description:"trigger x days before/after date-column",
                     properties:{
                         type: bre.addType('matchDatabaseObject', async (input,cfg,results) => {
-                            if( !(input.schedulerDaily && cfg.offset && cfg.field) ) return false
+                            if( !((input.schedulerDaily || (cfg.test && input.test)) && cfg.offset && cfg.field) ) return false
                             var className = cfg.field.split('.')[0]
                             var property  = cfg.field.split('.')[1]
                             var date     = new Date()
@@ -80,7 +86,8 @@ module.exports = function(opts){
                             return input.output.items.length != 0 ? true : false
                         }),
                         field:{ type:"string","$ref":"#/definitions/dbpath" },
-                        offset:{ type:"integer",format:"number",description:"days",minimum:-360,maximum:360}
+                        offset:{ type:"integer",format:"number",description:"days",minimum:-360,maximum:360},
+                        test
                     }
                 }                            
             ]
@@ -103,6 +110,7 @@ module.exports = function(opts){
     Parse.Cloud.job("Rule engine (hourly)",  runScheduler.bind(this,{schedulerHourly:true}) )
     Parse.Cloud.job("Rule engine (6hourly)", runScheduler.bind(this,{scheduler6Hourly:true}) )
     Parse.Cloud.job("Rule engine (daily)",   runScheduler.bind(this,{schedulerDaily:true}) )
+    Parse.Cloud.job("Rule engine (test)",    runScheduler.bind(this,{test:true}) )
     //Parse.Cloud.job("Rule engine (weekly)",  runScheduler.bind(this,{schedulerWeekly:true}) )
     //Parse.Cloud.job("Rule engine (monthly)", runScheduler.bind(this,{schedulerMonthly:true}) )
         

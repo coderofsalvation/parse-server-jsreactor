@@ -1,1 +1,1 @@
-../../node_modules/jsreactor/test/unit/helloworld.js
+../../node_modules/@coderofsalvation/jsreactor/test/unit/helloworld.js

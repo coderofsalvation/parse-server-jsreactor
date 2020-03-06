@@ -1,7 +1,1 @@
-var z = require('zora')
-
-var Parse = require('./mock/Parse.js')
-
-require('./Parse')(z)
-//require('./action/rule')(z,Parse)
-require('./action/scheduler')(z,Parse)
+../../node_modules/@coderofsalvation/jsreactor/test/unit/test.js

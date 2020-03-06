@@ -1,6 +1,6 @@
 {
   "name": "parse-server-jsreactor",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "> WARNING: this project is in BETA and under huge development",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/unit/test.js && exit 0"
+    "test": "{ find test/unit/*.js -maxdepth 1 | xargs -n1 node; }  && exit 0"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,9 @@
   },
   "homepage": "https://github.com/coderofsalvation/parse-server-jsreactor#readme",
   "devDependencies": {
+    "parse": "^2.11.0",
+    "parse-mockdb": "git+https://github.com/Hustle/parse-mockdb.git",
+    "parse-shim": "^1.0.7",
     "zora": "^3.1.4"
   }
 }

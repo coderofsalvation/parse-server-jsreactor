@@ -45,13 +45,13 @@ ParseMockDB.mockDB();
 // create database-classes
 Parse.Object.extend('Rule') 
 Parse.Object.extend('RuleWave')
-require('./mock/Cloud')(Parse) 
+require('./test/unit/mock/Cloud')(Parse) 
 
 var BRE = false
 var channel
 
 var setup = async (z) => {
-    BRE = require('./../../.')(Parse) // index.js
+    BRE = require('./../../../.')(Parse) // index.js
     new HelloWorld({bre:BRE})
     new Input({bre:BRE})
     new Javascript({bre:BRE})
