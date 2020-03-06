@@ -62,40 +62,40 @@ module.exports = function(opts){
         var n = await q.count()    
         var l = 5 // process 5 a time
         var reqs = []
-        for( i = 0; i < n; i+=l ) reqs.push({skip:i, limit:l})
+           for( i = 0; i < n; i+=l ) reqs.push({skip:i, limit:l})
         var processWave = (i) => new Promise( async (resolve,reject) => {
             new Parse.Query("RuleWave")
             .skip(i.skip)
             .limit(i.limit)
             .find()
-            .then( (ruleWaves) => {
-                ruleWaves.map( (RuleWave) => {
+            .then( async (ruleWaves) => {
+                for( var i in ruleWaves ){
+                    var RuleWave = ruleWaves[i]
+                    debug("rulewave")
                     // process wave 
                     var ruleWave = RuleWave.toJSON()
                     var done     = false
                     this.runWave(ruleWave, () => {
+                        debug("ruleWave done")
                         this.waveDone(RuleWave)
                         done = true
                     })
                     if( done ) return // no more work needed
                     var trigger = ruleWave.trigger
                     delete ruleWave.trigger
-                    RuleWave.save( ruleWave )
-                    .then( async () => {
-                        console.dir(ruleWave)
-                        // trigger subrule if needed
-                        if( trigger !== false && trigger.rule ){
-                            console.log("running rule")
-                            this.log("triggered rule ",ruleWave)
-                            debug("getting Rule id"+trigger.rule)
-                            var Rule = await new Parse.Query('Rule').get(trigger.rule)
-                            var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...ruleWave.config.input,getWaveRule: () => ruleWave},{})
-                            ruleWave.config.input = res.output
-                            await RuleWave.save(ruleWave) // update
-                        }
-                    })
-                })
-                setTimeout(resolve, process.env.TEST ? 1 : 2000) // 2 sec of pause 
+                    await RuleWave.save( ruleWave )
+                    debug("delay_execute: "+ruleWave.delay_execute)
+                    // trigger subrule if needed
+                    if( trigger !== false && trigger.rule ){
+                        this.log("triggered rule ",ruleWave)
+                        debug("getting Rule id"+trigger.rule)
+                        var Rule = await new Parse.Query('Rule').get(trigger.rule)
+                        var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...ruleWave.config.input,getWaveRule: () => ruleWave},{})
+                        ruleWave.config.input = res.output
+                        await RuleWave.save(ruleWave) // update
+                    }
+                }
+                setTimeout(resolve, process.env.TEST ? 1 : 2000) // 2 sec of pause to offload server 
             })
         })
         Promise.resolve(reqs)
@@ -128,18 +128,16 @@ module.exports = function(opts){
             }
         }
 
-        this.setupWave  = async (input,config,results) => new Promise((resolve,reject) => {
+        this.setupWave  = async (input,config,results) => {
+            debug('setupWave()')
             var rule     = results.events[0].params
-            var RuleWave = Parse.Object.extend("RuleWave");
-            var ruleWave = new RuleWave()
+            var ruleWave = new Parse.Object("RuleWave")
             ruleWave.set('wave',       input.wave       || 0)
             ruleWave.set('delay_execute', input.delay_execute || config.waves[0].delay_execute )
             ruleWave.set('name',       (input.delay_execute||input.wave) && input.name ? input.name : rule.name )
             ruleWave.set('config', {RuleWave:{objectId:rule.objectId},...config,input})
-            ruleWave.save()
-            .then(resolve)
-            .catch(reject)
-        })
+            await ruleWave.save()
+        }
  
         this.action = {
             schema: [

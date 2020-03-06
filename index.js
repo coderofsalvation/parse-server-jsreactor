@@ -44,8 +44,9 @@ function bre(Parse, opts){
                 bre
                 .createRuleSchema()
                 .then( () => q.find() )
-                .then( (rules) => rules.map( (r) => r.toJSON() ) ) 
-                .then( (rules) => rules.filter( (r) => _.get(r,'config.extra.disabled') ? false : r) )
+                .then( (rules) => rules.map(    (r  ) => r.toJSON() ) ) 
+                .then( (rules) => rules.filter( (r  ) => _.get(r,'config.extra.disabled') ? false : r) )
+                .then( (rules) => rules.sort(   (a,b) => _.get(a,'config.extra.priority') > _.get(b,'config.extra.priority') ) )
                 .then( resolve )
                 .catch( (e) => {
                     console.error(e)
