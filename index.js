@@ -99,7 +99,7 @@ function bre(Parse, opts){
             var endpoint = async (cb,req) => {
                 if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
                 req.params.request = () => req
-                if( !bre.log.parse ) enableParseLogging(req)
+                if( opts.logConsole && !bre.log.parse ) enableParseLogging(req)
                 return cb(req.params)
             }
             Parse.Cloud.define(i, endpoint.bind(bre,bre.endpoint[i]))
