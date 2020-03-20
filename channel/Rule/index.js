@@ -130,13 +130,22 @@ module.exports = function(opts){
 
         this.setupWave  = async (input,config,results) => {
             debug('setupWave()')
-            var rule     = results.events[0].params
-            var ruleWave = new Parse.Object("RuleWave")
-            ruleWave.set('wave',       input.wave       || 0)
-            ruleWave.set('delay_execute', input.delay_execute || config.waves[0].delay_execute )
-            ruleWave.set('name',       (input.delay_execute||input.wave) && input.name ? input.name : rule.name )
-            ruleWave.set('config', {RuleWave:{objectId:rule.objectId},...config,input})
-            await ruleWave.save()
+            if( !input.test ){
+                var rule     = results.events[0].params
+                var ruleWave = new Parse.Object("RuleWave")
+                ruleWave.set('wave',       input.wave       || 0)
+                ruleWave.set('delay_execute', input.delay_execute || config.waves[0].delay_execute )
+                ruleWave.set('name',       (input.delay_execute||input.wave) && input.name ? input.name : rule.name )
+                ruleWave.set('config', {RuleWave:{objectId:rule.objectId},...config,input})
+                await ruleWave.save()
+            }else{
+                config.waves.map( async (wave) => {
+                    bre.log(`TEST mode enabled: firing subrule ${wave.rule} immediately`)
+                    var Rule = await new Parse.Query("Rule").get(wave.rule)
+                    var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...input,getWaveRule: () => wave},{})
+                    bre.log( JSON.stringify(res,null,2) )
+                })
+            }
         }
  
         this.action = {
