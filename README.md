@@ -17,7 +17,7 @@ var BRE         = require('parse-server-jsreactor')
 var Database    = require('parse-server-jsreactor/channel/Database')
 var Input       = BRE.Channel.Input 
 
-var bre = new BRE(Parse,{languages:['EN']})
+var bre = new BRE(Parse,{languages:['EN'],logConsole:true})
 
 new Database({bre})
 new Input({bre})

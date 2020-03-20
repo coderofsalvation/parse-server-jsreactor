@@ -40,14 +40,14 @@ module.exports = function(opts){
         
         opts.classes.map( (c) => {
             if( listeners[c] ) return // only once
-            console.log("registering "+c+".afterSave etc hooks")
+            console.log("registering "+c+".afterSave/beforeSave hooks")
             var cb = async (type,className,request) => {
                 var input = {className,request}
                 input[type] = true
                 if( request.user ) await User.extend(request.user,input) // convenient flat userobject useable by triggers
                 await bre.run(input)
                 if( type.match(/^after/) ) return request.objects
-                if( className == "User" ) return request.object
+                if( request.object       ) return request.object
             }
             var createCallback = (type) => cb.bind(this,type,c)
             var className = c

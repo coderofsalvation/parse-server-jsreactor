@@ -63,7 +63,8 @@ module.exports = function(opts){
                     description:"trigger x days before/after date-column",
                     properties:{
                         type: bre.addType('matchDatabaseObject', async (input,cfg,results) => {
-                            if( !((input.schedulerDaily || (cfg.test && input.test)) && cfg.offset && cfg.field) ) return false
+                            var testMode = (cfg.test && input.test)
+                            if( !((input.schedulerDaily || testMode) && cfg.offset && cfg.field) ) return false
                             var className = cfg.field.split('.')[0]
                             var property  = cfg.field.split('.')[1]
                             var date     = new Date()
@@ -83,7 +84,7 @@ module.exports = function(opts){
                             }
                             console.log(`searching for ${className}-items with '${property}' between ${d.a} and ${d.b} (offset=${cfg.offset})`)
                             console.log( (input.output.items ? input.output.items.length : 0 ) + ` ${className}'s found` )
-                            return input.output.items.length != 0 ? true : false
+                            return input.output.items.length != 0 || testMode ? true : false
                         }),
                         field:{ type:"string","$ref":"#/definitions/dbpath" },
                         offset:{ type:"integer",format:"number",description:"days",minimum:-360,maximum:360},

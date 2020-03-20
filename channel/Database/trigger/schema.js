@@ -54,7 +54,37 @@ module.exports = function(opts){
         },
         {
             type:"object",
-            title:slug+"is created",
+            title:slug+"is being updated",
+            properties:{
+                type: bre.addType('onDatabaseUpdate', async (input,cfg) => {
+                    return input.beforeSave && input.className == cfg.uitem// && !input.request.object.isNew()
+                }),
+                uitem:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"is being deleted",
+            properties:{
+                type: bre.addType('onDatabaseBeforeDelete', async (input,cfg) => {
+                    return input.beforeDelete && input.className == cfg.item
+                }),
+                item:{
+                    type:"string",
+                    enum: opts.classes,
+                    default: opts.classes.length ? opts.classes[0]: ' ',
+                    description:docs
+                }
+            }
+        },
+        {
+            type:"object",
+            title:slug+"was created",
             properties:{
                 type: bre.addType('onDatabaseCreated', async (input,cfg) => {
                     return input.afterSave && input.className == cfg.item && input.request.object.existed() === false
@@ -71,23 +101,8 @@ module.exports = function(opts){
             type:"object",
             title:slug+"was updated",
             properties:{
-                type: bre.addType('onDatabaseUpdate', async (input,cfg) => {
+                type: bre.addType('onDatabaseUpdated', async (input,cfg) => {
                     return input.afterSave && input.className == cfg.item
-                }),
-                item:{
-                    type:"string",
-                    enum: opts.classes,
-                    default: opts.classes.length ? opts.classes[0]: ' ',
-                    description:docs
-                }
-            }
-        },
-        {
-            type:"object",
-            title:slug+"is being deleted",
-            properties:{
-                type: bre.addType('onDatabaseBeforeDelete', async (input,cfg) => {
-                    return input.beforeDelete && input.className == cfg.item
                 }),
                 item:{
                     type:"string",
