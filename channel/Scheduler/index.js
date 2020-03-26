@@ -111,7 +111,6 @@ module.exports = function(opts){
     Parse.Cloud.job("Rule engine (hourly)",  runScheduler.bind(this,{schedulerHourly:true}) )
     Parse.Cloud.job("Rule engine (6hourly)", runScheduler.bind(this,{scheduler6Hourly:true}) )
     Parse.Cloud.job("Rule engine (daily)",   runScheduler.bind(this,{schedulerDaily:true}) )
-    Parse.Cloud.job("Rule engine (test)",    runScheduler.bind(this,{test:true}) )
     //Parse.Cloud.job("Rule engine (weekly)",  runScheduler.bind(this,{schedulerWeekly:true}) )
     //Parse.Cloud.job("Rule engine (monthly)", runScheduler.bind(this,{schedulerMonthly:true}) )
         
