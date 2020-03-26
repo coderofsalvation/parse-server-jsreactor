@@ -64,7 +64,7 @@ module.exports = function(opts){
                     properties:{
                         type: bre.addType('matchDatabaseObject', async (input,cfg,results) => {
                             var testMode = (cfg.test && input.test)
-                            if( !((input.schedulerDaily || testMode) && cfg.offset && cfg.field) ) return false
+                            if( !((input.schedulerDaily || testMode) && cfg.offset != undefined && cfg.field) ) return false
                             var className = cfg.field.split('.')[0]
                             var property  = cfg.field.split('.')[1]
                             var date     = new Date()
