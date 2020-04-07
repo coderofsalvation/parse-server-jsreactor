@@ -139,12 +139,14 @@ module.exports = function(opts){
                 ruleWave.set('config', {RuleWave:{objectId:rule.objectId},...config,input})
                 await ruleWave.save()
             }else{
-                config.waves.map( async (wave) => {
-                    bre.log(`TEST mode enabled: firing subrule ${wave.rule} immediately`)
-                    var Rule = await new Parse.Query("Rule").get(wave.rule)
-                    var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...input,getWaveRule: () => wave},{})
-                    bre.log( JSON.stringify(res,null,2) )
-                })
+                setTimeout( () => {
+                    config.waves.map( async (wave) => {
+                        bre.log(`TEST mode enabled: firing subrule ${wave.rule} immediately`)
+                        var Rule = await new Parse.Query("Rule").get(wave.rule)
+                        var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...input,getWaveRule: () => wave},{})
+                        bre.log( JSON.stringify(res,null,2) )
+                    })
+                },1500) // lets give the current action some headroom to finish (time) + get readable logs
             }
         }
  
