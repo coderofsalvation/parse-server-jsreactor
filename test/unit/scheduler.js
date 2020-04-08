@@ -20,15 +20,15 @@ var testDummyRule = {
         "formschema": ""
         },
         "action": [
-        {
-            "config": {
-            "type": "javascript",
-            "config": {
-                "js": "console.log('hello world');"
+            {
+                "config": {
+                    "type": "javascript",
+                    "config": {
+                        "js": "if( input.item ) input.output.succes = 123;"
+                    }
+                },
+                "channel": "Javascript"
             }
-            },
-            "channel": "Javascript"
-        }
         ],
         "trigger": [
         {
@@ -93,9 +93,11 @@ z.test('run scheduler (match database date)', async (t) => new Promise( async (r
     var result = []
     var output = []
     
-    var result = await BRE.run({schedulerDaily:true})
+    var input  = {schedulerDaily:true}
+    var result = await BRE.run(input)
     sleep(1) 
-    t.ok(result.output.items.length == 1)
+    console.dir(result)
+    t.ok(input.output.succes,"item was passed to javascript")
     resolve()
 }))
     

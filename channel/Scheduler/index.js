@@ -75,16 +75,24 @@ module.exports = function(opts){
                             var q = new Parse.Query(className) 
                                         .greaterThanOrEqualTo(property, date)
                                         .lessThan(property, datePlusOne)
-                            
-                            input.output.offset = String(cfg.offset).replace(/-/,'')
-                            input.output.items = await q.find()
+                         
+                            // query & spread items over separate inputs
+                            var vars  = ['triggers','offsetAbsolute']
+                            var items = await q.find()
+                            if( items.length > 0 ){
+                                input.output.input = []
+                                input.offsetAbsolute = String(cfg.offset).replace(/-/,'')
+                                for( let i = 0; i < items.length; i++ )
+                                    input.output.input[i] = Object.assign({item:items[i],items:items}, _.pluck(vars,input))
+                            }
+
                             var d = {
                                 a: new Date(date).toISOString().substr(0,10),
                                 b: new Date(datePlusOne).toISOString().substr(0,10)
                             }
                             console.log(`searching for ${className}-items with '${property}' between ${d.a} and ${d.b} (offset=${cfg.offset})`)
-                            console.log( (input.output.items ? input.output.items.length : 0 ) + ` ${className}'s found` )
-                            return input.output.items.length != 0 || testMode ? true : false
+                            console.log( (items ? items.length : 0 ) + ` ${className}'s found` )
+                            return items.length != 0 || testMode ? true : false
                         }),
                         field:{ type:"string","$ref":"#/definitions/dbpath" },
                         offset:{ type:"integer",format:"number",description:"days",minimum:-360,maximum:360},

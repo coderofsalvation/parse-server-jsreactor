@@ -19,7 +19,7 @@ var testDummyRule = (id) => ({
             "config": {
                 "type": "javascript",
                 "config": {
-                    "js": "input.output.foo = input.foo+10"
+                    "js": `console.log(JSON.stringify({id:'${id}',input},null,2)) ; input.bar = String(input.bar)+'${id}'; input.output.foo = input.foo+10`
                 }
             },
             "channel": "Javascript"
@@ -99,7 +99,7 @@ var setup = async (z) => {
                     "value": "foo"
                 },
                 "channel": "Input"
-            }] // empty, so its always triggered
+            }]
         }
     })
     // setup rules in DB
@@ -153,7 +153,7 @@ z.test('run wave rule (installs RuleWave state)', async () => {
     }.bind(BRE.Channel,BRE.Channel.runActions)
 
     await BRE.run({foo:1}) // this triggers the rule.js:setupWave()
-    
+
     // we do timeouts because BRE rules run seperated by time
     await sleep(1)
     var waves = await new Parse.Query("RuleWave").find()
@@ -163,7 +163,7 @@ z.test('run wave rule (installs RuleWave state)', async () => {
         Parse.Cloud.startJob("Rule engine (waves)")
         await sleep(0.3)
     }
-        
+ 
     // we do timeouts here to simulate waiting for completion of previous cloudjobs    
     await sleep(1)
     var error = false 

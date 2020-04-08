@@ -146,7 +146,7 @@ module.exports = function(opts){
                         var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...input,getWaveRule: () => wave},{})
                         bre.log( JSON.stringify(res,null,2) )
                     })
-                },1500) // lets give the current action some headroom to finish (time) + get readable logs
+                },500) // lets give the current action some headroom to finish (time) + get readable logs
             }
         }
  
