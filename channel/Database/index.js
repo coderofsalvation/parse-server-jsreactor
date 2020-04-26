@@ -42,12 +42,16 @@ module.exports = function(opts){
             if( listeners[c] ) return // only once
             console.log("registering "+c+".afterSave/beforeSave hooks")
             var cb = async (type,className,request) => {
-                var input = {className,request}
-                input[type] = true
-                if( request.user ) await User.extend(request.user,input) // convenient flat userobject useable by triggers
-                await bre.run(input)
-                if( type.match(/^after/) ) return request.objects
-                if( request.object       ) return request.object
+                try{
+                    var input = {className,request}
+                    input[type] = true
+                    if( request.user ) await User.extend(request.user,input) // convenient flat userobject useable by triggers
+                    await bre.run(input)    
+                    if( type.match(/^after/) ) return request.objects
+                    if( request.object       ) return request.object    
+                }catch(e){
+                    console.error(e)
+                }
             }
             var createCallback = (type) => cb.bind(this,type,c)
             var className = c
