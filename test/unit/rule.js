@@ -1,8 +1,9 @@
-let RuleAction = require('./../../channel/Rule')
-var HelloWorld = require('@coderofsalvation/jsreactor/channel/HelloWorld')
-var Javascript = require('@coderofsalvation/jsreactor/channel/Javascript')
-var Input      = require('@coderofsalvation/jsreactor/channel/Input')
+let RuleAction  = require('./../../channel/Rule')
+var HelloWorld  = require('@coderofsalvation/jsreactor/channel/HelloWorld')
+var Javascript  = require('@coderofsalvation/jsreactor/channel/Javascript')
+var Input       = require('@coderofsalvation/jsreactor/channel/Input')
 const z         = require('zora')
+var timemachine = require('timemachine')
 
 var sleep      = (sec) => new Promise((r,j) => setTimeout(r,sec*1000) )
 var ids        = {}
@@ -46,6 +47,12 @@ ParseMockDB.mockDB();
 Parse.Object.extend('Rule') 
 Parse.Object.extend('RuleWave')
 require('./mock/Cloud')(Parse) 
+
+var hours = 1
+var mins  = 0
+timemachine.config({
+	dateString: `April 22, 2020 ${hours}:${mins}:59`
+});
 
 var BRE = false
 var channel
@@ -114,7 +121,8 @@ var setup = async (z) => {
         console.dir(r)
         ids[ ''+r.get('name') ] = r.id
     }
-    // now we have the Rule objectids stored in 'ids' so lets build the rule containing the Rule-action :)
+	
+	// now we have the Rule objectids stored in 'ids' so lets build the rule containing the Rule-action :)
     var r = new Parse.Object('Rule')
     await r.save( dbitem() )
     
@@ -137,8 +145,8 @@ z.test('run wave rule (installs RuleWave state)', async () => {
     var output = []
     // spy runWave to capture function output
     var runWave = channel.runWave
-    channel.runWave = async (state) => {
-        var x = await runWave(state)
+    channel.runWave = async (state,done) => {
+        var x = await runWave(state,done)
         result.push(x)
         return x
     }
@@ -159,23 +167,18 @@ z.test('run wave rule (installs RuleWave state)', async () => {
     var waves = await new Parse.Query("RuleWave").find()
     z.equal(waves.length,1, "wave should be installed")
     // we do timeouts because Cloud jobs run seperated by time
-    for( var i = 0; i < 8; i++ ){
+    for( var i = 0; i < 14; i++ ){
         Parse.Cloud.startJob("Rule engine (waves)")
-        await sleep(0.3)
+		process.stdout.write("\rrunWave "+i)
+        await sleep(0.5)
     }
  
     // we do timeouts here to simulate waiting for completion of previous cloudjobs    
     await sleep(1)
     var error = false 
-    for( var i in result ){
-        var fields = ['delay_execute','wave']
-        fields.map( (f) => {
-            if( result[i][f] !== expected.result[i][f] ) error = [{i},result[i],expected.result[i]]
-        })
-    }
-    if(error) console.dir(error)
     z.ok( !error, "match output runWave()"  )
     output = output.map( (o) => { delete o.runid; return o})
+	// hilariously crude way of error checking 
     z.ok( output.length == expected.output.length, "rules output ok")
         
 })

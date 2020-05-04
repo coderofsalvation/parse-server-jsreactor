@@ -35,24 +35,23 @@ module.exports = function(opts){
     }
 
     this.runWave = (state,done) => {
+		done          = done ? done : () => false 
         var waves     = state.config.waves
         var waverule  = waves[state.wave]
-        var firsttime = state.wave == 0 && state.delay_execute == 0
+		var immediate = state.wave == 0 && state.delay_execute == 0
         var trigger = false
         if( !waverule                     )    return done() // no more rules
         if( waverule.active === 0         )    return        // disabled
         if( state.delay_execute < 0          ) return done() // wave is done
         state.delay_execute-=1
-        if( state.delay_execute === 0 ){
-          waverule = waves[ state.wave + state.wave === 0 ? 0 : 1]
-          if(waverule){
-            state.wave += 1
-            state.delay_execute = waverule.delay_execute 
-            trigger = waverule
-          }
+        if( !immediate && state.delay_execute === 0 ){
+          trigger = waverule
+		  var nextWave = waves[ state.wave + 1 ]
+		  state.wave += 1
+          state.delay_execute = nextWave? nextWave.delay_execute : -1
         }
-        if( firsttime ) trigger = waverule
-        state.trigger = trigger
+		if( immediate ) trigger = waverule
+	    state.trigger = trigger
         return state
     }
 
@@ -87,7 +86,7 @@ module.exports = function(opts){
                     debug("delay_execute: "+ruleWave.delay_execute)
                     // trigger subrule if needed
                     if( trigger !== false && trigger.rule ){
-                        this.log("triggered rule ",ruleWave)
+                        this.log("triggered rule "+trigger.rule,ruleWave)
                         debug("getting Rule id"+trigger.rule)
                         var Rule = await new Parse.Query('Rule').get(trigger.rule)
                         var res = await bre.Channel.runActions(Rule.toJSON(),{output:{},...ruleWave.config.input,getWaveRule: () => ruleWave},{})
@@ -131,10 +130,11 @@ module.exports = function(opts){
         this.setupWave  = async (input,config,results) => {
             debug('setupWave()')
             if( !input.test ){
-                var rule     = results.events[0].params
-                var ruleWave = new Parse.Object("RuleWave")
+				var hoursCorrection    = (new Date()).getHours() + 1
+                var rule               = results.events[0].params
+                var ruleWave           = new Parse.Object("RuleWave")
                 ruleWave.set('wave',       input.wave       || 0)
-                ruleWave.set('delay_execute', input.delay_execute || config.waves[0].delay_execute )
+				ruleWave.set('delay_execute', (input.delay_execute || config.waves[0].delay_execute) + hoursCorrection )
                 ruleWave.set('name',       (input.delay_execute||input.wave) && input.name ? input.name : rule.name )
                 ruleWave.set('config', {RuleWave:{objectId:rule.objectId},...config,input})
                 await ruleWave.save()

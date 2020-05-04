@@ -59,9 +59,12 @@ FooSchema.addDate('targetDate')
 var BRE = false
 var channel
 var today     = new Date()
-today.setHours(0, 0, 0, 0);
+today.setHours(14, 10, 0, 0);
 var targetDate  = new Date(today);
 targetDate.setDate(targetDate.getDate() + (-offset) );
+console.log("todays date:"+ (new Date(today)))
+console.log("target date:"+targetDate)
+
 
 var setup = async (z) => {
     BRE = require('./../../.')(Parse) // index.js

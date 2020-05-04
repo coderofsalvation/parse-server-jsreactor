@@ -1,6 +1,6 @@
 {
   "name": "parse-server-jsreactor",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "> WARNING: this project is in BETA and under huge development",
   "main": "index.js",
   "directories": {
@@ -28,6 +28,7 @@
     "parse": "^2.11.0",
     "parse-mockdb": "git+https://github.com/Hustle/parse-mockdb.git",
     "parse-shim": "^1.0.7",
+    "timemachine": "^0.3.1",
     "zora": "^3.1.4"
   }
 }
