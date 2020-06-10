@@ -31,6 +31,7 @@ function bre(Parse, opts){
                 b.log("fallback: created Rule-Class schema in db")
                 schema.addString('name');
                 schema.addObject('config')
+                schema.addBoolean('disabled')
                 schema.save()
                 .then(resolve)
                 .catch(reject)
@@ -50,6 +51,7 @@ function bre(Parse, opts){
                 .then( resolve )
                 .catch( (e) => {
                     console.error(e)
+					resolve([])
                 })
             })
         }

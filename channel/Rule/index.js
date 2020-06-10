@@ -1,5 +1,5 @@
 // default conditional operators from json-logic-schema
-var debug = require('@coderofsalvation/jsreactor/node_modules/debug')('parse-server-jsreactor/channel/rule')
+var debug     = require('debug')
 var _         = require('@coderofsalvation/jsreactor/_')
 var pMemoize  = require('p-memoize')
 var peach     = require('promise-each')
