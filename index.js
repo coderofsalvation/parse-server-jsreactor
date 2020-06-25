@@ -6,6 +6,7 @@ var User = require('./User')
 function bre(Parse, opts){
     opts = opts || {}
     opts.MEMOIZE_AGE = process.env.MEMOIZE_AGE || 2000
+	console.log("+++"+ Parse.CoreManager.get('APPLICATION_ID') )
     
     var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
@@ -95,21 +96,20 @@ function bre(Parse, opts){
             bre.log.parse = true
         }
 
-        // register endpoints
-        for( var i in bre.endpoint ){
-            console.log(`defining Parse.Cloud.${i}`)
-            var endpoint = async (cb,req) => {
-                if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
-                req.params.request = () => req
-                if( opts.logConsole && !bre.log.parse ) enableParseLogging(req)
-                return cb(req.params)
-            }
-            Parse.Cloud.define(i, endpoint.bind(bre,bre.endpoint[i]))
-        }
-
     }
 
-    var b = BRE(parseAdapter,opts)
+    var b = new BRE(parseAdapter,opts)
+	// register endpoints
+	for( var i in b.endpoint ){
+		console.log(`defining Parse.Cloud.${i} `+ Parse.CoreManager.get('APPLICATION_ID') )
+		var endpoint = async (cb,req) => {
+			if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
+			req.params.request = () => req
+			if( opts.logConsole && !bre.log.parse ) enableParseLogging(req)
+			return cb(req.params)
+		}
+		Parse.Cloud.define(i, endpoint.bind(b,b.endpoint[i]))
+	}
     b.log(`MEMOIZE_AGE set to ${opts.MEMOIZE_AGE/1000} seconds`)
     b.Parse = Parse
 
