@@ -6,7 +6,6 @@ var User = require('./User')
 function bre(Parse, opts){
     opts = opts || {}
     opts.MEMOIZE_AGE = process.env.MEMOIZE_AGE || 2000
-	console.log("+++"+ Parse.CoreManager.get('APPLICATION_ID') )
     
     var parseAdapter = opts.adapter ? opts.adapter : async (bre) => {
 
@@ -105,7 +104,7 @@ function bre(Parse, opts){
 		var endpoint = async (cb,req) => {
 			if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
 			req.params.request = () => req
-			if( opts.logConsole && !bre.log.parse ) enableParseLogging(req)
+			if( opts.logConsole && !b.log.parse ) enableParseLogging(req)
 			return cb(req.params)
 		}
 		Parse.Cloud.define(i, endpoint.bind(b,b.endpoint[i]))
