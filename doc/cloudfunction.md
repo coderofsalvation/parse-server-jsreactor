@@ -1,4 +1,4 @@
-> NOTE: Only use cloud functions when 3rd parties need REST-access. Otherwise just use the Input-trigger & Parse API (client)
+> NOTE: Only use cloud functions when 3rd parties need REST-access or multi-database access. Otherwise just use the Input-trigger & Parse API (client)
 
 ## Usage
 
