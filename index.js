@@ -31,7 +31,6 @@ function bre(Parse, opts){
                 b.log("fallback: created Rule-Class schema in db")
                 schema.addString('name');
                 schema.addObject('config')
-                schema.addBoolean('disabled')
                 schema.save()
                 .then(resolve)
                 .catch(reject)
@@ -51,7 +50,6 @@ function bre(Parse, opts){
                 .then( resolve )
                 .catch( (e) => {
                     console.error(e)
-					resolve([])
                 })
             })
         }
@@ -78,6 +76,17 @@ function bre(Parse, opts){
 
         bre.Parse = Parse
 
+		var appId = Parse.CoreManager.get('APPLICATION_ID')
+		process[appId] = process[appId] || {
+			bre, 
+			serverURL: Parse.serverURL, 
+			k:[ 
+				Parse.CoreManager.get('APPLICATION_ID'), 
+				Parse.CoreManager.get('JAVASCRIPT_KEY'), 
+				Parse.CoreManager.get('MASTER_KEY')
+			]
+		}
+
         function enableParseLogging(req){
             if( bre.log.parse ) return
             var old = bre.log 
@@ -95,22 +104,27 @@ function bre(Parse, opts){
             bre.log.parse = true
         }
 
+        // register endpoints
+        for( var i in bre.endpoint ){
+            console.log(`defining Parse.Cloud.${i}`)
+            var endpoint = async (cb,req) => {
+				var appId = Parse.CoreManager.get('APPLICATION_ID')
+                if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
+                req.params.request = () => req
+                if( opts.logConsole && !bre.log.parse ) enableParseLogging(req)
+				let breInstance = process[appId].bre
+				// multi-app workaround: reinitilialize Parse client, since its a singleton :/
+				breInstance.Parse.initialize.apply( breInstance.Parse, process[appId].k )
+				breInstance.Parse.serverURL = Parse.serverURL
+				return breInstance.endpoint[cb](req.params)
+            }
+            Parse.Cloud.define(i, endpoint.bind(null,i))
+        }
+
     }
 
-    var b = new BRE(parseAdapter,opts)
-	// register endpoints
-	for( var i in b.endpoint ){
-		console.log(`defining Parse.Cloud.${i} `+ Parse.CoreManager.get('APPLICATION_ID') )
-		var endpoint = async (cb,req) => {
-			if( req.user ) await User.extend(req.user,req.params) // convenient flat userobject useable by triggers
-			req.params.request = () => req
-			if( opts.logConsole && !b.log.parse ) enableParseLogging(req)
-			return cb(req.params)
-		}
-		Parse.Cloud.define(i, endpoint.bind(b,b.endpoint[i]))
-	}
+    var b = BRE(parseAdapter,opts)
     b.log(`MEMOIZE_AGE set to ${opts.MEMOIZE_AGE/1000} seconds`)
-    b.Parse = Parse
 
     return b
 }

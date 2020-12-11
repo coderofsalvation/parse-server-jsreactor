@@ -81,3 +81,33 @@ In case you want to enjoy editable sendgrid templates when using Parse's  __pass
 ```
 
 > NOTE: dont forget to run `npm install jsreactor-channel-sendgrid` and read its [docs](https://npmjs.com/package/jsreactor-channel-sendgrid)
+
+## Multi-tenant: Unique Rules per App 
+
+The `Parse`-object is a singleton by default. 
+However, we can work around this to enable per-app Parse instances:
+
+```
+     Parse.initializeMulti = (appId, javascriptKey, masterKey, Parse) => {                                                       
+		Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
+        var _Parse = require('parse/node')
+        _Parse.initialize( appId, javascriptKey, masterKey )
+        _Parse.Cloud = Parse.Cloud                                                                                                
+	    return _Parse
+      }                                                                                                                   
+      var init = async (app) => {
+          // init globally
+          Parse.initialize( app.appId, app.javascriptKey, app.masterKey ) // remember instance
+			// but also 'fork' an instance
+          Parse[ app.appId ] = Parse.initializeMulti( app.appId, app.javascriptKey, app.masterKey, Parse )
+          Parse[ app.appId ].serverURL = app.serverURL
+          ...
+		  // use Parse[ app.appId ] from here to initialize BRE
+	      var bre = new BRE(Parse[ app.appId ],{languages:['EN'],logConsole:true})
+		
+	  }
+
+	  for( var i in apps ) await init(apps[i])
+
+
+```
