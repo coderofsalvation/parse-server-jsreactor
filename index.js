@@ -116,6 +116,7 @@ function bre(Parse, opts){
 				// multi-app workaround: reinitilialize Parse client, since its a singleton :/
 				breInstance.Parse.initialize.apply( breInstance.Parse, process[appId].k )
 				breInstance.Parse.serverURL = Parse.serverURL
+				breInstance._id = appId
 				return breInstance.endpoint[cb](req.params)
             }
             Parse.Cloud.define(i, endpoint.bind(null,i))
@@ -123,7 +124,7 @@ function bre(Parse, opts){
 
     }
 
-    var b = BRE(parseAdapter,opts)
+    var b = new BRE(parseAdapter,opts)
     b.log(`MEMOIZE_AGE set to ${opts.MEMOIZE_AGE/1000} seconds`)
 
     return b
